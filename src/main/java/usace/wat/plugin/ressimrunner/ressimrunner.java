@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import hec.rss.model.RssRun;
 
 
 public class ressimrunner  {
@@ -43,12 +44,13 @@ public class ressimrunner  {
         String modelOutputDestination = "/model/"+mp.getModel().getName()+"/";
         //download the payload to list all input files
         Utilities.CopyPayloadInputsLocally(mp, modelOutputDestination);
-        for(ResourcedFileData i : mp.getInputs()){
-            if (i.getFileName().contains(mp.getModel().getName() + ".wksp")){
+        for(ResourcedFileData input : mp.getInputs()){
+            if (input.getFileName().contains(mp.getModel().getName() + ".wksp")){
                 //compute passing in the event config portion of the model payload
-                String wkspFile = modelOutputDestination + i.getFileName();
+                String wkspFile = modelOutputDestination + input.getFileName();
                 System.out.println("preparing to run " + wkspFile);
-                ResSim.openWatershed(wkspFile);
+                RssRun rr = new RssRun(wkspFile);
+                /*ResSim.openWatershed(wkspFile);
                 ResSim.selectModule("Simulation");
                 simModule = ResSim.getCurrentModule();
                 if(simModule.simulationExists(simName)){
@@ -64,13 +66,11 @@ public class ressimrunner  {
                 //save the workspace
                 ClientApp.Workspace().saveWorkspace();
 
-                ClientApp.frame().exitApplication();
+                ClientApp.frame().exitApplication();*/
                 System.out.println("run completed for " + wkspFile);
                 break;
             }
         }
-        //walk("/model/");
-        //walk("/model/data/");    
         //push results to s3.
         for (ResourcedFileData output : mp.getOutputs()) {
             //ResourceInfo ri = new ResourceInfo();
