@@ -1,0 +1,45 @@
+//The Gradle JVM needs to be Java 1.8. It'll build with anything, but you're gonna run into runtime errors "Java lang no method found" if you dont.
+
+plugins {
+    id 'java-library'
+}
+//Dependency Management
+repositories {
+    mavenCentral()
+    maven{
+        name = "GitHubPackages"
+        // The url of the repository that contains the published artifacts
+        url = "https://maven.pkg.github.com/USACE/wat-java-sdk"
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        }
+    }
+    maven {
+        url "https://www.hec.usace.army.mil/nexus/repository/maven-public/"
+    }
+}
+configurations {
+    linux_x64
+}
+dependencies {
+    implementation 'mil.army.usace.hec.ressim:hec-ressim:3.5.0.280-linux-x86_64@tar.gz'
+    implementation 'mil.army.usace.hec:wat-java-sdk:0.0.10'
+}
+
+jar {
+    zip64 = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes "Main-Class": "usace.wat.plugin.ressimrunner.ressimrunner"
+    }
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    
+    from {
+        configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
+    }
+}
+
+group 'mil.army.usace.hec'
+version '0.0.1'
