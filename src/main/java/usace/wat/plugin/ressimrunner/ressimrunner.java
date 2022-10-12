@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class hmsrunner  {
+public class ressimrunner  {
     public static final String PluginName = "ressimrunner";
     /**
      * @param args the command line arguments
@@ -86,7 +86,6 @@ public class hmsrunner  {
                 e.printStackTrace();
             }  
         }
-        Hms.shutdownEngine();
     }
 
 }
