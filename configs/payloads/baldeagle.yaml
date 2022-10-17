@@ -1,0 +1,31 @@
+payload_id: 17b6ca16-70af-54bd-98d3-0329d69b957b
+model:
+    name: 1993.11.27-1400
+    alternative: NoDSOps
+event_index: 0
+inputs:
+    - id: d1d60c2e-f3b4-436b-9c87-c6fb5f5653a2
+      filename: 1993.11.27-1400.simperiod
+      resource_info:
+        store: local
+        root: /workspaces/ressim-runner/rss
+        path: /hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/rss/1993.11.27-1400.simperiod
+    - id: cb950b3f-e4ff-4109-936c-5991ad42fb45
+      filename: BaldEagle_V3.1.wksp
+      resource_info:
+        store: local
+        root: /workspaces/ressim-runner/rss
+        path: /hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/BaldEagle_V3.1.wksp
+    - id: cb950b3f-e4ff-4109-936c-5991ad42fb45
+      filename: NoDSOps.malt
+      resource_info:
+        store: local
+        root: /workspaces/ressim-runner/rss
+        path: /workspaces/ressim-runner/rss/hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/rss/NoDSOps.malt
+outputs:
+    - filename: simulation.dss
+      filename: 1993.11.27-1400.simperiod
+      resource_info:
+        store: local
+        root: /workspaces/ressim-runner/rss
+        path: /hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/1993.11.27-1400/simulation.dss

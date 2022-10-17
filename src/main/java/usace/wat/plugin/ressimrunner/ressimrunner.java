@@ -41,8 +41,10 @@ public class ressimrunner  {
         }
         //first arg should be a modelpayload check to see it is
         String filepath = args[1];
+        
         //load payload. 
         ModelPayload mp = Utilities.LoadPayload(filepath);
+        
         String wkspName = "BaldEagle_V3.1";
         String simName = RMAIO.userNameToFileName(mp.getModel().getName());
         String altName = mp.getModel().getAlternative();
@@ -50,18 +52,15 @@ public class ressimrunner  {
 
         //copy the model to local if not localcompute
         //hard coded outputdestination is fine in a container
-        String modelOutputDestination = "/model/"+mp.getModel().getName()+"/";
-        //ClientApp.setCanExitJVM(false);
-        //String[] cmdArgs = new String[]{ "noframe" };
-        //RSS.startResSim(cmdArgs);
-        //RSS rss = RSS.rssApp();
+        //String modelOutputDestination = "/model/"+mp.getModel().getName()+"/";
+
         boolean wkspFound = false;
-        String wkspFile = modelOutputDestination;
+        String wkspFile = "/workspaces/ressim-runner/rss/hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/BaldEagle_V3.1.wksp";//modelOutputDestination;
         boolean altFound = false;
         boolean simFound = false;
-        String simFilePath = modelOutputDestination;
+        String simFilePath = "/workspaces/ressim-runner/rss/hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/rss/1993.11.27-1400.simperiod";//modelOutputDestination;
         //download the payload to list all input files
-        Utilities.CopyPayloadInputsLocally(mp, modelOutputDestination);
+        //Utilities.CopyPayloadInputsLocally(mp, modelOutputDestination);
         for(ResourcedFileData input : mp.getInputs()){
             if (input.getFileName().contains(wkspName + ".wksp")){
                 wkspFound = true;
@@ -85,7 +84,7 @@ public class ressimrunner  {
                 RmiWorkspace rssrmiwksp = rmiwksp.getChildWorkspace("rss");
                 Identifier simid = new Identifier(simFilePath);
                 SimulationPeriod sim = (SimulationPeriod)rssrmiwksp.getManager(SimulationPeriod.class.getName(),simid);
-                sim.loadWorkspace(null, modelOutputDestination);
+                sim.loadWorkspace(null, "/workspaces/ressim-runner/rss/hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/");//modelOutputDestination);
                 SimulationRun simrun = sim.getSimulationRun(altName);
                 sim.setComputeAll(true);
                 sim.computeRun(simrun, -1);
@@ -97,6 +96,7 @@ public class ressimrunner  {
             System.out.println("run completed for " + wkspFile);
         }
         //push results to s3.
+        /*
         for (ResourcedFileData output : mp.getOutputs()) {
             //ResourceInfo ri = new ResourceInfo();
             //need to set the resource info
@@ -111,6 +111,7 @@ public class ressimrunner  {
                 e.printStackTrace();
             }  
         }
+        */
     }
 
 }
