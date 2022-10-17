@@ -26,7 +26,7 @@ public class ressimrunner  {
     public static void main(String[] args) {
         System.out.println(PluginName + " says hello.");
         //check the args are greater than 1
-        Utilities.InitalizeFromEnv();
+        //Utilities.InitalizeFromEnv();
 
         if(args.length!=2){
             for(String s : args){
