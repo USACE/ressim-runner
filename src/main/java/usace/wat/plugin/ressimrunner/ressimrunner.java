@@ -1,10 +1,14 @@
 package usace.wat.plugin.ressimrunner;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import hec.csinterface.RmiFileManager;
 import hec.io.Identifier;
@@ -13,6 +17,7 @@ import hec.model.SimulationRun;
 import hec.rmi.csinterface.RmiWorkspace;
 import hec.server.RmiAppImpl;
 import rma.util.RMAIO;
+import usace.wat.plugin.Message;
 import usace.wat.plugin.ModelPayload;
 import usace.wat.plugin.ResourcedFileData;
 import usace.wat.plugin.Utilities;
@@ -26,7 +31,7 @@ public class ressimrunner  {
     public static void main(String[] args) {
         System.out.println(PluginName + " says hello.");
         //check the args are greater than 1
-        //Utilities.InitalizeFromEnv();
+        
 
         if(args.length!=2){
             for(String s : args){
@@ -41,10 +46,12 @@ public class ressimrunner  {
         }
         //first arg should be a modelpayload check to see it is
         String filepath = args[1];
-        
+
+        /*Utilities.InitalizeFromEnv();
         //load payload. 
         ModelPayload mp = Utilities.LoadPayload(filepath);
-        
+        */
+        ModelPayload mp = LoadLocalPayload(filepath);
         String wkspName = "BaldEagle_V3.1";
         String simName = RMAIO.userNameToFileName(mp.getModel().getName());
         String altName = mp.getModel().getAlternative();
@@ -112,6 +119,20 @@ public class ressimrunner  {
             }  
         }
         */
+    }
+    private static ModelPayload LoadLocalPayload(String filepath) {
+        File file = new File(filepath);
+        final ObjectMapper mapper = new ObjectMapper(new YAMLFactory()); // jackson databind
+        try {
+            return mapper.readValue(file, ModelPayload.class);
+        } catch (Exception e) {
+            Message message = Message.BuildMessage()
+            .withMessage("Error Parsing Payload Contents: " + e.getMessage())
+            .fromSender("Plugin Services")
+            .build();
+            Utilities.Log(message);
+        }
+        return new ModelPayload();
     }
 
 }
