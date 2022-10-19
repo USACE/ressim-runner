@@ -15,8 +15,10 @@ import hec.io.Identifier;
 import hec.model.SimulationPeriod;
 import hec.model.SimulationRun;
 import hec.rmi.csinterface.RmiWorkspace;
+import hec.rss.server.RssRMIServer;
 import hec.server.RmiAppImpl;
 import rma.util.RMAIO;
+
 import usace.wat.plugin.Message;
 import usace.wat.plugin.ModelPayload;
 import usace.wat.plugin.ResourcedFileData;
@@ -60,7 +62,12 @@ public class ressimrunner  {
         //copy the model to local if not localcompute
         //hard coded outputdestination is fine in a container
         //String modelOutputDestination = "/model/"+mp.getModel().getName()+"/";
-
+        try {
+            RssRMIServer app = new RssRMIServer();
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         boolean wkspFound = false;
         String wkspFile = "/workspaces/ressim-runner/rss/hec-ressim-3.5.0.280-linux-x86_64.tar/ressim-280-wat/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/BaldEagle_V3.1.wksp";//modelOutputDestination;
         boolean altFound = false;
@@ -99,7 +106,6 @@ public class ressimrunner  {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
             System.out.println("run completed for " + wkspFile);
         }
         //push results to s3.
