@@ -62,6 +62,7 @@ public class ressimrunner  {
         //copy the model to local if not localcompute
         //hard coded outputdestination is fine in a container
         //String modelOutputDestination = "/model/"+mp.getModel().getName()+"/";
+        System.setSecurityManager(new SecurityManager());
         try {
             RssRMIServer app = new RssRMIServer();
         } catch (RemoteException e) {
