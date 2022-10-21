@@ -1,0 +1,28 @@
+/* AUTOMATICALLY GENERATED ON Tue Feb 15 11:09:25 PST 2000*/
+/* DO NOT EDIT */
+
+grant codeBase "file:/" {
+  permission java.security.AllPermission;
+  permission java.io.FilePermission "<<ALL FILES>>", "read, write, delete, execute";
+  permission java.lang.RuntimePermission "setIO";
+};
+
+grant codeBase "file:." {
+  permission java.security.AllPermission;
+  permission java.lang.RuntimePermission "setIO";
+};
+
+grant {
+  permission java.io.FilePermission "<<ALL FILES>>", "read, write, delete, execute";
+};
+
+grant {
+  permission java.security.AllPermission;
+  permission java.io.FilePermission "<<ALL FILES>>", "read, write, delete, execute";
+  permission java.lang.RuntimePermission "setIO";
+};
+
+grant {
+  permission java.lang.RuntimePermission "accessClassInPackage.sun.rmi.server";
+};
+
