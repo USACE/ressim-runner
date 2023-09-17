@@ -27,4 +27,6 @@ hs_err_pid*
 run/*
 configs/models/*
 rss/*
+cloud-compute/*
+.env
 Dockerfile.prod
