@@ -25,6 +25,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4'
     implementation fileTree(dir: "/HEC-ResSim-3.5.0.280/jar", include: '*.jar')
+    implementation fileTree(dir: "/HEC-ResSim-3.5.0.280/jar/ext", include: '*.jar')
+    implementation fileTree(dir: "/HEC-ResSim-3.5.0.280/jar/sys", include: '*.jar')
     implementation fileTree(dir: "/cloud-compute/jar", include: '*.jar')
 }
 
@@ -34,8 +36,8 @@ jar {
     manifest {
         attributes "Main-Class": "usace.wat.plugin.ressimrunner.ressimrunner"
     }
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
     
     from {
         configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}

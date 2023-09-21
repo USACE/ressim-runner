@@ -33,6 +33,13 @@ public class ressimrunner  {
         String simFilePath = "/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/rss/1993.11.27-1400.simperiod";//modelOutputDestination;
 
         if (true){
+            try {
+                RssRMIServer server = new hec.rss.server.RssRMIServer();
+                
+            } catch (RemoteException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             RmiAppImpl rmiapp = RmiAppImpl.getApp();
             RmiFileManager filemanager = rmiapp.getFileManager();
             Identifier wkspid = new Identifier(wkspFile); 
