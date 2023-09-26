@@ -1,23 +1,13 @@
 package usace.wat.plugin.ressimrunner;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.rmi.RemoteException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
-import hec.csinterface.RmiFileManager;
-import hec.io.Identifier;
-import hec.model.SimulationPeriod;
-import hec.model.SimulationRun;
-import hec.rmi.csinterface.RmiWorkspace;
-import hec.rss.server.RssRMIServer;
-import hec.server.RmiAppImpl;
-import rma.util.RMAIO;
+import usace.cc.plugin.DataSource;
 import usace.cc.plugin.Payload;
 import usace.cc.plugin.PluginManager;
 
@@ -29,52 +19,77 @@ public class ressimrunner  {
      */
     public static void main(String[] args) {
         System.out.println(PluginName + " says hello.");
-        String wkspFile = "/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/BaldEagle_V3.1.wksp";//modelOutputDestination;
-        String simFilePath = "/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/rss/1993.11.27-1400.simperiod";//modelOutputDestination;
-
-        if (true){
-            try {
-                RssRMIServer server = new hec.rss.server.RssRMIServer();
-                
-            } catch (RemoteException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        //check the args are greater than 1
+        PluginManager pm = PluginManager.getInstance();
+        //load payload. 
+        Payload mp = pm.getPayload();
+        //get Watershed name
+        String watershedName = (String) mp.getAttributes().get("watershed_name");
+        //get Alternative name
+        String alternativeName = (String) mp.getAttributes().get("alternative_name");
+        //get Simulation name?
+        String simulationName = (String) mp.getAttributes().get("simulation_name");
+        //copy the model to local if not local
+        //hard coded workingdirectory is fine in a container
+        String modelOutputDestination = "/model/"+watershedName+"/";
+        File dest = new File(modelOutputDestination);
+        deleteDirectory(dest);
+        //download the payload to list all input files
+        String wkspFilePath = "";
+        
+        for(DataSource i : mp.getInputs()){
+            if (i.getName().contains(".wksp")){
+                //compute passing in the event config portion of the model payload
+                wkspFilePath = modelOutputDestination + i.getName();
             }
-            RmiAppImpl rmiapp = RmiAppImpl.getApp();
-            RmiFileManager filemanager = rmiapp.getFileManager();
-            Identifier wkspid = new Identifier(wkspFile); 
+            byte[] bytes = pm.getFile(i, 0);
+            //write bytes locally.
+            File f = new File(modelOutputDestination, i.getName());
             try {
-                wkspid = filemanager.openFile("ressimrunner", wkspid);
-                RmiWorkspace rmiwksp = rmiapp.openWorkspace("ressimrunner",wkspid);
-                RmiWorkspace rssrmiwksp = rmiwksp.getChildWorkspace("rss");
-                Identifier simid = new Identifier(simFilePath);
-                SimulationPeriod sim = (SimulationPeriod)rssrmiwksp.getManager(SimulationPeriod.class.getName(),simid);
-                sim.loadWorkspace(null, "/HEC-ResSim-3.5.0.280/Examples/ExampleWatersheds/base/BaldEagle_V3.1/");//modelOutputDestination);
-                SimulationRun simrun = sim.getSimulationRun("NoDSOps");
-                sim.setComputeAll(true);
-                sim.computeRun(simrun, -1);
-            } catch (RemoteException e) {
-                // TODO Auto-generated catch block
+                if (!f.getParentFile().exists()){
+                    f.getParentFile().mkdirs();
+                }
+                if (!f.createNewFile()){
+                    f.delete();
+                    if(!f.createNewFile()){
+                        System.out.println(f.getPath() + " cant create or delete this location");
+                        return;
+                    }
+                }
+            } catch (IOException e) {
                 e.printStackTrace();
+                return;
             }
-            System.out.println("run completed for " + wkspFile);
-        }
+            try(FileOutputStream outputStream = new FileOutputStream(f)){
+                outputStream.write(bytes);
+            }catch(Exception e){
+                e.printStackTrace();
+                return;
+            }
+        }    
+        String[] blankArgs = new String[]{"/HEC-ResSim-3.5.0.280/SimpleServer.py",wkspFilePath,simulationName,alternativeName};
+        hec.rss.server.RssRMIServer.main(blankArgs);
+        System.out.println("simulation completed for " + simulationName);
         //push results to s3.
-        /*
-        for (ResourcedFileData output : mp.getOutputs()) {
-            //ResourceInfo ri = new ResourceInfo();
-            //need to set the resource info
-            //Utilities.DownloadObject(info)  
-            Path path = Paths.get(modelOutputDestination + output.getFileName());
+        for (DataSource output : mp.getOutputs()) { 
+            Path path = Paths.get(modelOutputDestination + output.getName());
             byte[] data;
             try {
                 data = Files.readAllBytes(path);
-                Utilities.UploadFile(output.getResourceInfo(), data);
+                pm.putFile(data, output,0);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
-            }  
+                return;
+            } 
         }
-        */
+    }
+    private static boolean deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        return directoryToBeDeleted.delete();
     }
 }

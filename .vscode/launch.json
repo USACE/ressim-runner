@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch ressimrunner",
+            "request": "launch",
+            "env": {
+                "PATH":"/HEC-ResSim-3.5.0.280/jar/*:/HEC-ResSim-3.5.0.280/jar/ext/*:/HEC-ResSim-3.5.0.280/jar/sys/*:$PATH",
+                "HEC_MAINCLASS":"hec.server.RssRMIServer",
+                "CLASSPATH":"/HEC-ResSim-3.5.0.280/jar/*:/HEC-ResSim-3.5.0.280/jar/ext/*:/HEC-ResSim-3.5.0.280/jar/sys/*:/HEC-ResSim-3.5.0.280/lib/*:/HEC-ResSim-3.5.0.280/lib/hec/*:/HEC-ResSim-3.5.0.280/java/lib/*:$CLASSPATH"
+            },
+            "mainClass": "usace.wat.plugin.ressimrunner.ressimrunner",
+            "projectName": "ressim-runner",
+            "vmArgs": [
+                "-Djava.library.path=/HEC-ResSim-3.5.0.280/lib",
+                "-Djava.security.policy=/HEC-ResSim-3.5.0.280/config/java.policy",
+                "-Dlogfile.directory=/HEC/HEC-ResSim/3.5/logs/",
+                "-DLOGFILE=/HEC/HEC-ResSim/3.5/logs/HEC-ResSim.log",
+                "-DDSSLOGFILE=/HEC/HEC-ResSim/3.5/logs/HEC-ResSim_DSS.log",
+                "-DCACHE_DIR=/HEC/HEC-ResSim/3.5/cache/",
+                "-Dpython.path=/HEC-ResSim-3.5.0.280/jar/sys/jythonLib.jar/lib:/HEC-ResSim-3.5.0.280/jar/sys/jythonutils.jar",
+                "-Dpython.home=/HEC/HEC-ResSim/3.5/pyhome",
+                "-DDataSetValidParameterListFile=/HEC-ResSim-3.5.0.280/config/parameters_units.def",
+                "-DUNIT_FILE=/HEC-ResSim-3.5.0.280/config/unitConversions.def",
+                "-DAsciiSerializer.formatFile=true",
+                "-Dlogin.properties.path=/HEC/HEC-ResSim/3.5/properties/login.properties",
+                "-Dproperties.path=/HEC-ResSim-3.5.0.280/config",
+                "-DCWMS_HOME=/HEC/HEC-ResSim/3.5/",
+                "-DCWMS_EXE=/HEC-ResSim-3.5.0.280/",
+                "-DstatePlane.directory=\"$BASEDIR/config",
+                "-DNO_PREDEFINED_WKSP=true",
+                "-DHasGlobalVariables=false",
+            ],
+        }
+    ]
+}
