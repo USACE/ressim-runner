@@ -36,11 +36,22 @@ public class ressimrunner  {
         deleteDirectory(dest);
         //download the payload to list all input files
         String wkspFilePath = "";
-        
+        Boolean foundWkspFile = false;
         for(DataSource i : mp.getInputs()){
             if (i.getName().contains(".wksp")){
                 //compute passing in the event config portion of the model payload
-                wkspFilePath = modelOutputDestination + i.getName();
+                
+                if (foundWkspFile){
+                    String tmpFile = modelOutputDestination + i.getName();
+                    if (wkspFilePath.length()<tmpFile.length()){
+                        //skip?
+                    }else{
+                        wkspFilePath = tmpFile;
+                    }
+                }else{
+                    wkspFilePath = modelOutputDestination + i.getName();
+                }
+                foundWkspFile = true;
             }
             byte[] bytes = pm.getFile(i, 0);
             //write bytes locally.

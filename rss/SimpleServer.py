@@ -52,6 +52,7 @@ def openSimulation(simulationName, rssWksp):
 	assert os.path.isfile(simulationPath), "####SCRIPT### - Simulation's simperiod file does exist"
 
 	simId = Identifier(simulationPath)
+	print(simId)
 	simMgr = rssWksp.getManager("hec.model.SimulationPeriod", simId)
 	if simMgr == None:
 		print("ERROR: Failed to getManager for simulation "+simulationName)
