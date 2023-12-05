@@ -2,7 +2,9 @@ package usace.wat.plugin.ressimrunner;
 
 import hec.heclib.dss.DSSErrorMessage;
 import hec.heclib.dss.HecTimeSeries;
+import hec.heclib.util.HecTime;
 import hec.io.TimeSeriesContainer;
+import hec.properties.HECCAVIProperties;
 import usace.cc.plugin.Action;
 import usace.cc.plugin.DataSource;
 import usace.cc.plugin.Payload;
@@ -68,6 +70,7 @@ public class DssToDssAction {
             TimeSeriesContainer desttsc = new TimeSeriesContainer();
             desttsc.fullName = destination.getDataPaths()[datasetPathIndex];
             desttsc.setValues(values);
+            desttsc.setTimes(tsc.getTimes());
             try {
                 writer.write(desttsc);
             } catch (Exception e) {

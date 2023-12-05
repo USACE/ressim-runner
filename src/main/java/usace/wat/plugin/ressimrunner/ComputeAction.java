@@ -13,7 +13,7 @@ public class ComputeAction {
         this.alternativeName = altname;
     }
     public void computeAction(){
-        String workspaceFilePath = action.getParameters().get("wksp_file").getPaths()[0];
+        String workspaceFilePath = action.getParameters().get("project_file").getPaths()[0];
         System.out.println("opening workspace " + workspaceFilePath);
         String[] Args = new String[]{SCRIPT,workspaceFilePath,simulationName,alternativeName};
         hec.rss.server.RssRMIServer.main(Args);

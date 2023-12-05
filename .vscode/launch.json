@@ -18,7 +18,7 @@
                 "CC_AWS_S3_BUCKET": "cc-store",
                 "CC_ROOT": "cc_store",
                 "CC_MANIFEST_ID": "kanawha/ressim",
-                "CC_EVENT_NUMBER": 455,
+                "CC_EVENT_NUMBER": 298,
                 "CC_S3_ENDPOINT": "host.docker.internal:9000",
                 "CC_S3_MOCK": true,
                 "CC_S3_DISABLE_SSL": true,

@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import usace.cc.plugin.Action;
 import usace.cc.plugin.DataSource;
+import usace.cc.plugin.Message;
 import usace.cc.plugin.Payload;
 import usace.cc.plugin.PluginManager;
 
@@ -77,11 +79,31 @@ public class ressimrunner  {
                 e.printStackTrace();
                 return;
             }
-        }    
-        String[] blankArgs = new String[]{"/HEC-ResSim-3.5.0.280/SimpleServer.py",wkspFilePath,simulationName,alternativeName};
-        hec.rss.server.RssRMIServer.main(blankArgs);
-        System.out.println("simulation completed for " + simulationName);
-        //push results to s3.
+        }
+        //perform all actions
+        for (Action a : mp.getActions()){
+            pm.LogMessage(new Message(a.getDescription()));
+            pm.LogMessage(new Message(System.getProperty("user.dir")));
+             pm.LogMessage(new Message(System.getProperty("java.class.path")));
+            switch(a.getName()){
+                case "update_timewindow_from_dss":
+                    UpdateTimeWindowFromDssAction utwfda = new UpdateTimeWindowFromDssAction(a);
+                    utwfda.computeAction();
+                    break;
+                case "compute_simulation":
+                    ComputeAction cs = new ComputeAction(a,simulationName,alternativeName);
+                    cs.computeAction();
+                    break;
+                case "dss_to_dss": 
+                    DssToDssAction da = new DssToDssAction(a);
+                    da.computeAction();
+                    break;
+                default:
+                break;
+            }
+
+        }
+        
         for (DataSource output : mp.getOutputs()) { 
             Path path = Paths.get(modelOutputDestination + output.getName());
             byte[] data;
