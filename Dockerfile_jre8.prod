@@ -1,0 +1,49 @@
+FROM ubuntu:20.04 as builder
+
+ENV TZ=America/New_York
+ENV GRADLE_HOME=/opt/gradle/latest
+ENV PATH=${GRADLE_HOME}/bin:$PATH
+
+#need to get the jdk.
+RUN apt update &&\
+    apt upgrade -y &&\
+    apt-cache search openjdk-8 &&\
+    apt -y install openjdk-8-jre &&\
+    apt -y install openjdk-8-jdk &&\
+    apt -y install git &&\
+    apt -y install libgfortran5 &&\
+    apt -y install unzip &&\
+    apt -y install wget &&\ 
+    wget https://services.gradle.org/distributions/gradle-7.3.1-bin.zip -P /tmp &&\
+    unzip -d /opt/gradle /tmp/gradle-7.3.1-bin.zip &&\
+    ln -s /opt/gradle/gradle-7.3.1 /opt/gradle/latest
+   
+#replace this with a dynamic call to a repo ultimately
+COPY cloud-compute/jar/cc-java-sdk-0.0.53-JR8.jar /cloud-compute/jar/cc-java-sdk-0.0.53-JR8.jar
+COPY ./rss/HEC-ResSim-3.5.0.280 /HEC-ResSim-3.5.0.280
+COPY rss/SimpleServer.py /HEC-ResSim-3.5.0.280
+COPY . /src/ressim-runner
+
+ENV RESSIM_HOME=/HEC-ResSim-3.5.0.280
+ENV CLASSPATH=${RESIM_HOME}/*:${RESIM_HOME}/lib/*:${RESIM_HOME}/jar/*:${RESIM_HOME}/java/lib/*
+ENV PATH=${RESIM_HOME}/lib:$PATH
+ENV JAVA_OPTS="-Djava.library.path=${RESIM_HOME}/lib"
+
+RUN  cd /src/ressim-runner &&\
+     gradle jar
+
+FROM ubuntu:20.04 as prod
+
+ENV RESSIM_HOME=/HEC-ResSim-3.5.0.280
+ENV RESSIM_RUNNER_HOME=/app
+
+COPY --from=builder /src/ressim-runner/build/libs/ressim-runner-0.0.1.jar /app/
+COPY --from=builder --chmod=0755 /src/ressim-runner/ressim-runner.sh /app/ressim-runner.sh
+COPY --from=builder /HEC-ResSim-3.5.0.280 /HEC-ResSim-3.5.0.280
+
+RUN apt update &&\
+    apt upgrade -y &&\
+    apt -y install libgfortran5 &&\
+    apt -y install openjdk-8-jre
+
+ENTRYPOINT ["/app/ressim-runner.sh"]

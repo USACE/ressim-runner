@@ -98,6 +98,14 @@ public class ressimrunner  {
                     DssToDssAction da = new DssToDssAction(a);
                     da.computeAction();
                     break;
+                case "dss_to_dss_merge":
+                    DsstoDssAppendAction dtda = new DsstoDssAppendAction(a);
+                    dtda.computeAction();
+                    break;
+                case "hms_control_to_simperiod":
+                    SimPeriodAction spa = new SimPeriodAction(a);
+                    spa.computeAction();
+                    break;
                 default:
                 break;
             }
