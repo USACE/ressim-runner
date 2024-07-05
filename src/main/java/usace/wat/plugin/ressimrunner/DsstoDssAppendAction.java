@@ -1,15 +1,9 @@
 package usace.wat.plugin.ressimrunner;
 
-import hec.heclib.dss.DSSErrorMessage;
 import hec.heclib.dss.HecDss;
-import hec.heclib.dss.HecTimeSeries;
 import hec.hecmath.HecMath;
-import hec.hecmath.TimeSeriesMath;
-import hec.io.TimeSeriesContainer;
 import usace.cc.plugin.Action;
 import usace.cc.plugin.DataSource;
-import usace.cc.plugin.Payload;
-import usace.cc.plugin.PluginManager;
 
 public class DsstoDssAppendAction {
         private Action action;
@@ -17,7 +11,6 @@ public class DsstoDssAppendAction {
         action = a;
     }
     public void computeAction(){
-        PluginManager pm = PluginManager.getInstance();
         try{
             //find source 
             DataSource sourceDs = action.getParameters().get("source");
