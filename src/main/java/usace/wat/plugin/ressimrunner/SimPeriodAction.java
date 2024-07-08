@@ -49,13 +49,13 @@ public class SimPeriodAction {
         //update start end and lookback lines
         for(int i = 0; i<simperiodlines.length;i++){
             if (simperiodlines[i].contains(STARTDATE)){
-                simperiodlines[i+1] = "  STR=" + startTime.toString();
+                simperiodlines[i+1] = "  STR=" + startTime.dateAndTime(1);//.toString();
             }
             if (simperiodlines[i].contains(ENDDATE)){
-                simperiodlines[i+1] = "  STR=" + endTime.toString();
+                simperiodlines[i+1] = "  STR=" + endTime.dateAndTime(1);;
             }
             if (simperiodlines[i].contains(LOOKBACKDATE)){
-                simperiodlines[i] = "  STR=" + lookback.toString();
+                simperiodlines[i] = "  STR=" + lookback.dateAndTime(1);;
             }
         }
         StringBuilder sb = new StringBuilder();
