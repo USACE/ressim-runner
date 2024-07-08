@@ -33,6 +33,7 @@ public class DsstoDssAppendAction {
                     System.out.println("merge write failed");
                     return;
                 }
+                dsIndex++;
             }
             //close reader
             source.close();
