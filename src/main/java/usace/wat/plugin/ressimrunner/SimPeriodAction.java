@@ -1,4 +1,8 @@
 package usace.wat.plugin.ressimrunner;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import hec.heclib.util.HecTime;
 import usace.cc.plugin.Action;
 import usace.cc.plugin.DataSource;
@@ -25,7 +29,15 @@ public class SimPeriodAction {
 
         //parse an HMS control file to find the time range of the compute.
         DataSource controlFile = action.getParameters().get("control_file");
-        byte[] controlbytes = pm.getFile(controlFile, 0);
+        //byte[] controlbytes = pm.getFile(controlFile, 0);//does not support local file operations
+        byte[] controlbytes;
+        try {
+            controlbytes = Files.readAllBytes(Paths.get(controlFile.getPaths()[0]));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
         HmsControlFile hcf = new HmsControlFile(controlbytes);
         //set start end and lookback times.
         HecTime lookback = hcf.getStartDateTime();
@@ -42,7 +54,15 @@ public class SimPeriodAction {
         
         //parse simperiod file
         DataSource simperiodFile = action.getParameters().get("simperiod_file");
-        byte[] simperiodbytes = pm.getFile(simperiodFile, 0);
+        byte[] simperiodbytes;
+        try {
+            simperiodbytes = Files.readAllBytes(Paths.get(simperiodFile.getPaths()[0]));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
+        //byte[] simperiodbytes = pm.getFile(simperiodFile, 0); // does not support local file types
         String simperiodcontent = new String(simperiodbytes);
         String[] simperiodlines = simperiodcontent.split("\\r?\\n");
 
@@ -64,8 +84,14 @@ public class SimPeriodAction {
         }
 
         //write out sim period lines to the sim period file.
-        pm.putFile(sb.toString().getBytes(), simperiodFile, 0);
-
+        //pm.putFile(sb.toString().getBytes(), simperiodFile, 0);//does not support local write operations.
+        try {
+            Files.write(Paths.get(simperiodFile.getPaths()[0]),simperiodbytes);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
         System.out.println("simperiod file updated");
     } 
 }
