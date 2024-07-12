@@ -1,5 +1,7 @@
 package usace.wat.plugin.ressimrunner;
 
+import java.io.File;
+
 import usace.cc.plugin.Action;
 
 public class ComputeAction {
@@ -14,6 +16,10 @@ public class ComputeAction {
     }
     public void computeAction(){
         String workspaceFilePath = action.getParameters().get("project_file").getPaths()[0];
+        File[] files = new File("/model/").listFiles();
+        for(File f : files){
+            System.out.println(f.getAbsolutePath());
+        }
         System.out.println("opening workspace " + workspaceFilePath);
         String[] Args = new String[]{SCRIPT,workspaceFilePath,simulationName,alternativeName};
         hec.rss.server.RssRMIServer.main(Args);
