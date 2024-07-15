@@ -39,6 +39,7 @@ public class SimPeriodAction {
             return;
         }
         HmsControlFile hcf = new HmsControlFile(controlbytes);
+        System.out.println(new String(controlbytes));
         //set start end and lookback times.
         HecTime lookback = hcf.getStartDateTime();
         HecTime startTime = hcf.getStartDateTime();
@@ -64,6 +65,7 @@ public class SimPeriodAction {
         }
         //byte[] simperiodbytes = pm.getFile(simperiodFile, 0); // does not support local file types
         String simperiodcontent = new String(simperiodbytes);
+        System.out.println(simperiodcontent);
         String[] simperiodlines = simperiodcontent.split("\\r?\\n");
 
         //update start end and lookback lines
@@ -81,6 +83,7 @@ public class SimPeriodAction {
         StringBuilder sb = new StringBuilder();
         for(String line : simperiodlines){
            sb.append(line + "\r\n");
+           System.out.println(line);
         }
 
         //write out sim period lines to the sim period file.

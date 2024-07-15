@@ -16,13 +16,20 @@ public class ComputeAction {
     }
     public void computeAction(){
         String workspaceFilePath = action.getParameters().get("project_file").getPaths()[0];
-        File[] files = new File("/model/").listFiles();
-        for(File f : files){
-            System.out.println(f.getAbsolutePath());
-        }
+        printFileNames("/model");
         System.out.println("opening workspace " + workspaceFilePath);
         String[] Args = new String[]{SCRIPT,workspaceFilePath,simulationName,alternativeName};
         hec.rss.server.RssRMIServer.main(Args);
         System.out.println("simulation completed for " + simulationName);
+    }
+    private void printFileNames(String path){
+        File[] files = new File(path).listFiles();
+        for (File f : files) {
+            if (f.isDirectory()) {
+                printFileNames(f.getAbsolutePath());
+            }else{
+                System.out.println(f.getAbsolutePath());
+            }
+        }        
     }
 }
