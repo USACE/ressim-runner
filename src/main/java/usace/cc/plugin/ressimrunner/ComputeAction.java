@@ -1,4 +1,4 @@
-package usace.wat.plugin.ressimrunner;
+package usace.cc.plugin.ressimrunner;
 
 import java.io.File;
 
