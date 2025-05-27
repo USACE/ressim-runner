@@ -39,7 +39,7 @@
                 "FFRD_S3_DISABLE_SSL": true,
                 "FFRD_S3_FORCE_PATH_STYLE": true
             },
-            "mainClass": "usace.cc.plugin.ressimrunner.ressimrunner",
+            "mainClass": "usace.cc.plugin.ressimrunner.RessimRunner",
             "projectName": "ressim-runner",
             "vmArgs": [
                 "-Djava.library.path=/HEC-ResSim-3.5.0.280/lib",

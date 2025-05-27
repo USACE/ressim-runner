@@ -14,7 +14,7 @@ import usace.cc.plugin.Payload;
 import usace.cc.plugin.PluginManager;
 
 
-public class ressimrunner  {
+public class RessimRunner  {
     public static final String PluginName = "ressimrunner";
     /**
      * @param args the command line arguments

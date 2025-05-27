@@ -36,7 +36,7 @@ jar {
     zip64 = true
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes "Main-Class": "usace.wat.plugin.ressimrunner.ressimrunner"
+        attributes "Main-Class": "usace.cc.plugin.ressimrunner.RessimRunner"
     }
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
