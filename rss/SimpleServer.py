@@ -150,7 +150,7 @@ HecDSSFileAccess.setMessageLevel(1)
 sim = openSimulation(simulationName, wksp)
 if sim == None: sys.exit("####SCRIPT### - openSimulation failed")
 
-# runExtract(sim)
+#runExtract(sim)
 
 if alternativeName == "-All-":
 	status = computeAll(sim)

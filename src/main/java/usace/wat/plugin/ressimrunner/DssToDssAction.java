@@ -1,5 +1,6 @@
 package usace.wat.plugin.ressimrunner;
 
+import hec.data.c.d;
 import hec.heclib.dss.DSSErrorMessage;
 import hec.heclib.dss.HecTimeSeries;
 import hec.io.TimeSeriesContainer;
@@ -39,6 +40,10 @@ public class DssToDssAction {
             error.printMessage();
             return;
         }
+        String fill_null = action.getParameters().get("fill_empty_values").getPaths()[0];
+        System.out.println("fill_empty_values " + fill_null);
+        //convert to bool
+        boolean fill = Boolean.parseBoolean(fill_null);
         //read time series from source
         int datasetPathIndex = 0;
         for(String p : source.getDataPaths()){//assumes datapaths for source and dest are ordered the same.
@@ -59,18 +64,47 @@ public class DssToDssAction {
                 break;
             }
             double[] values = tsc.values;
+            double[] outvalues = new double[values.length];
+            /*System.out.println(p);
+            for(double f : values){
+                System.out.print(f);
+            }
+            System.out.println("");*/
             int i = 0;
             for(double f : values){
-                values[i] = f*multiplier;
+                double fillvalue = f;
+                outvalues[i] =fillvalue;
+                if (fill){
+                    if(fillvalue<= -900){
+                        if (i==0){
+                            fillvalue = tsc.minimumValue();
+                            outvalues[i]=fillvalue;
+                            System.out.println("modifying timestep 1");
+                        }else{
+                            fillvalue = outvalues[i-1];
+                            outvalues[i] = fillvalue;
+                            System.out.println("modifying a timestep");
+                        }
+                    }
+                }
+                outvalues[i] = fillvalue*multiplier;
+
                 i++;
             }
+            /*System.out.println(p);
+            for(double f : outvalues){
+                System.out.print(f);
+            }
+            System.out.println("");*/
             //write time series to destination
             TimeSeriesContainer desttsc = new TimeSeriesContainer();
             desttsc.fullName = destination.getDataPaths()[datasetPathIndex];
-            desttsc.setValues(values);
+            desttsc.setValues(outvalues);
             desttsc.setTimes(tsc.getTimes());
+            tsc.setValues(outvalues);
             try {
                 writer.write(desttsc);
+                reader.write(tsc);
             } catch (Exception e) {
                 e.printStackTrace();
                 return;

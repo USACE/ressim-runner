@@ -19,13 +19,13 @@ public class SimPeriodAction {
 
     public void computeAction(){
         PluginManager pm = PluginManager.getInstance();
-        String lookbackduration = action.getParameters().get("lookback_duration").getPaths()[0];//switch to attributes with SDK update.
-        String lookbackWithinTimeWindow = action.getParameters().get("lookback_within_timewindow").getPaths()[0];
+        String lookback_adjustment = action.getParameters().get("lookback_adjustment").getPaths()[0];//switch to attributes with SDK update.
+        String start_time_adjustment = action.getParameters().get("start_time_adjustment").getPaths()[0];
 
-        //convert lookback duration (in hours to int)
-        int duration = Integer.parseInt(lookbackduration);
+        //convert lookback adjustment (in hours to int)
+        int lb_adjustment = Integer.parseInt(lookback_adjustment);
         //convert lookbackwithin timewindow to boolean
-        Boolean lookbackwithin = Boolean.parseBoolean(lookbackWithinTimeWindow); 
+        int st_adjustment = Integer.parseInt(start_time_adjustment); 
 
         //parse an HMS control file to find the time range of the compute.
         DataSource controlFile = action.getParameters().get("control_file");
@@ -39,20 +39,22 @@ public class SimPeriodAction {
             return;
         }
         HmsControlFile hcf = new HmsControlFile(controlbytes);
-        System.out.println(new String(controlbytes));
+        //System.out.println(new String(controlbytes));
         //set start end and lookback times.
         HecTime lookback = hcf.getStartDateTime();
-        HecTime startTime = hcf.getStartDateTime();
+        HecTime startTime = (HecTime)hcf.getStartDateTime().clone();
         HecTime endTime = hcf.getEndDateTime();
 
-        if (lookbackwithin){
-            //calculate the ressim start time by adding the lookback duration to the start time, and setting the hms start time as the lookback time
-            startTime.addHours(duration);
-        }else{
-            //calculate the ressim start time by subtracting the lookback duration from the start time, and setting the lookback time as a time outside of the hms compute time window
-            lookback.subtractHours(duration);
-        }
         
+            //calculate the starttime by adjusting HMS control start time to reflect when the start time starts
+            startTime.addHours(st_adjustment);
+
+            //calculate the lookback by adjusting HMS control start time to reflect when the lookbackstarts
+            lookback.addHours(lb_adjustment);
+
+        //System.out.println(lookback.dateAndTime(104));
+        //System.out.println(startTime.dateAndTime(104));
+
         //parse simperiod file
         DataSource simperiodFile = action.getParameters().get("simperiod_file");
         byte[] simperiodbytes;
@@ -65,7 +67,7 @@ public class SimPeriodAction {
         }
         //byte[] simperiodbytes = pm.getFile(simperiodFile, 0); // does not support local file types
         String simperiodcontent = new String(simperiodbytes);
-        System.out.println(simperiodcontent);
+        //System.out.println(simperiodcontent);
         String[] simperiodlines = simperiodcontent.split("\\r?\\n");
 
         //update start end and lookback lines
@@ -77,7 +79,7 @@ public class SimPeriodAction {
                 simperiodlines[i+1] = "  STR=" + endTime.dateAndTime(104).replace(", ", ",").replace(":","");
             }
             if (simperiodlines[i].contains(LOOKBACKDATE)){
-                simperiodlines[i] = "  STR=" + lookback.dateAndTime(104).replace(", ", ",").replace(":","");
+                simperiodlines[i+1] = "  STR=" + lookback.dateAndTime(104).replace(", ", ",").replace(":","");
             }
         }
         StringBuilder sb = new StringBuilder();
@@ -88,6 +90,7 @@ public class SimPeriodAction {
 
         //write out sim period lines to the sim period file.
         //pm.putFile(sb.toString().getBytes(), simperiodFile, 0);//does not support local write operations.
+        simperiodbytes = sb.toString().getBytes();
         try {
             Files.write(Paths.get(simperiodFile.getPaths()[0]),simperiodbytes);
         } catch (IOException e) {
