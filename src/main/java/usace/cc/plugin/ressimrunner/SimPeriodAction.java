@@ -1,12 +1,14 @@
-package usace.wat.plugin.ressimrunner;
+package usace.cc.plugin.ressimrunner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import hec.heclib.util.HecTime;
-import usace.cc.plugin.Action;
-import usace.cc.plugin.DataSource;
-import usace.cc.plugin.PluginManager;
+import usace.cc.plugin.api.Action;
+import usace.cc.plugin.api.DataSource;
+import usace.cc.plugin.api.DataStore.DataStoreException;
+import usace.cc.plugin.api.IOManager.InvalidDataSourceException;
 public class SimPeriodAction {
     private Action action;
     private final String STARTDATE = "  FLD=_startDate";
@@ -18,25 +20,28 @@ public class SimPeriodAction {
     }
 
     public void computeAction(){
-        PluginManager pm = PluginManager.getInstance();
-        String lookback_adjustment = action.getParameters().get("lookback_adjustment").getPaths()[0];//switch to attributes with SDK update.
-        String start_time_adjustment = action.getParameters().get("start_time_adjustment").getPaths()[0];
-
+        Optional<String> oplookback_adjustment = action.getAttributes().get("lookback_adjustment");//switch to attributes with SDK update.
+        Optional<String> opstart_time_adjustment = action.getAttributes().get("start_time_adjustment");
+        if(!oplookback_adjustment.isPresent()){
+            System.out.println("could not find attribute lookback_adjustment in action simperiod_action");
+            System.exit(-1);
+        }
+        if(!opstart_time_adjustment.isPresent()){
+            System.out.println("could not find attribute start_time_adjustment in action simperiod_action");
+            System.exit(-1);
+        }
+        String lookback_adjustment = oplookback_adjustment.get();
+        String start_time_adjustment = opstart_time_adjustment.get();
         //convert lookback adjustment (in hours to int)
         int lb_adjustment = Integer.parseInt(lookback_adjustment);
         //convert lookbackwithin timewindow to boolean
-        int st_adjustment = Integer.parseInt(start_time_adjustment); 
-
-        //parse an HMS control file to find the time range of the compute.
-        DataSource controlFile = action.getParameters().get("control_file");
-        //byte[] controlbytes = pm.getFile(controlFile, 0);//does not support local file operations
-        byte[] controlbytes;
+        int st_adjustment = Integer.parseInt(start_time_adjustment);
+        byte[] controlbytes = null; 
         try {
-            controlbytes = Files.readAllBytes(Paths.get(controlFile.getPaths()[0]));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return;
+            controlbytes = action.get("control_file","default","");
+        } catch (IOException | InvalidDataSourceException | DataStoreException e) {
+            System.out.println("could not get bytes for control_file");
+            System.exit(-1);
         }
         HmsControlFile hcf = new HmsControlFile(controlbytes);
         //System.out.println(new String(controlbytes));
@@ -56,14 +61,13 @@ public class SimPeriodAction {
         //System.out.println(startTime.dateAndTime(104));
 
         //parse simperiod file
-        DataSource simperiodFile = action.getParameters().get("simperiod_file");
-        byte[] simperiodbytes;
+
+        byte[] simperiodbytes = null;
         try {
-            simperiodbytes = Files.readAllBytes(Paths.get(simperiodFile.getPaths()[0]));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return;
+            simperiodbytes = action.get("simperiod_file", "default", "");
+        } catch (IOException | InvalidDataSourceException | DataStoreException e) {
+            System.out.println("could not get bytes for simperiod_file");
+            System.exit(-1);
         }
         //byte[] simperiodbytes = pm.getFile(simperiodFile, 0); // does not support local file types
         String simperiodcontent = new String(simperiodbytes);
@@ -89,10 +93,11 @@ public class SimPeriodAction {
         }
 
         //write out sim period lines to the sim period file.
-        //pm.putFile(sb.toString().getBytes(), simperiodFile, 0);//does not support local write operations.
+        Optional<DataSource> opSimperiodFile = action.getInputDataSource("simperiod_file");
         simperiodbytes = sb.toString().getBytes();
         try {
-            Files.write(Paths.get(simperiodFile.getPaths()[0]),simperiodbytes);
+            //getting the path without checking the optional is present is safe because it is the same path we used to get the datafile from aws.
+            Files.write(Paths.get(opSimperiodFile.get().getPaths().get("default")),simperiodbytes);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

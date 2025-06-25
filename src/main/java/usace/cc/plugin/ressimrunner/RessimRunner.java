@@ -1,20 +1,22 @@
-package usace.wat.plugin.ressimrunner;
+package usace.cc.plugin.ressimrunner;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
-import usace.cc.plugin.Action;
-import usace.cc.plugin.DataSource;
-import usace.cc.plugin.Message;
-import usace.cc.plugin.Payload;
-import usace.cc.plugin.PluginManager;
+import usace.cc.plugin.api.PluginManager;
+import usace.cc.plugin.api.Action;
+import usace.cc.plugin.api.DataSource;
+import usace.cc.plugin.api.DataStore.DataStoreException;
+import usace.cc.plugin.api.IOManager.InvalidDataSourceException;
+import usace.cc.plugin.api.IOManager.InvalidDataStoreException;
+import usace.cc.plugin.api.Payload;
 
 
-public class ressimrunner  {
+
+public class RessimRunner  {
     public static final String PluginName = "ressimrunner";
     /**
      * @param args the command line arguments
@@ -22,15 +24,37 @@ public class ressimrunner  {
     public static void main(String[] args) {
         System.out.println(PluginName + " says hello.");
         //check the args are greater than 1
-        PluginManager pm = PluginManager.getInstance();
+        PluginManager pm = null;
+        try {
+            pm = PluginManager.getInstance();
+        } catch (InvalidDataStoreException e) {
+            // TODO Auto-generated catch block
+            System.out.println("could not initialize plugin manager");
+            System.exit(-1);
+        }
         //load payload. 
         Payload mp = pm.getPayload();
         //get Watershed name
-        String watershedName = (String) mp.getAttributes().get("watershed_name");
+        Optional<String> opWatershedName = mp.getAttributes().get("watershed_name");
+        if(!opWatershedName.isPresent()){
+            System.out.println("could not find payload attribute watershed_name");
+            System.exit(-1);
+        }
+        String watershedName = opWatershedName.get();
         //get Alternative name
-        String alternativeName = (String) mp.getAttributes().get("alternative_name");
+        Optional<String> opAlternativeName = mp.getAttributes().get("alternative_name");
+        if(!opAlternativeName.isPresent()){
+            System.out.println("could not find payload attribute alternative_name");
+            System.exit(-1);
+        }
+        String alternativeName = opAlternativeName.get();
         //get Simulation name?
-        String simulationName = (String) mp.getAttributes().get("simulation_name");
+        Optional<String> opSimulationName = mp.getAttributes().get("simulation_name");
+        if(!opSimulationName.isPresent()){
+            System.out.println("could not find payload attribute simulation_name");
+            System.exit(-1);
+        }
+        String simulationName = opSimulationName.get();
         //copy the model to local if not local
         //hard coded workingdirectory is fine in a container
         String modelOutputDestination = "/model/"+watershedName+"/";
@@ -55,8 +79,7 @@ public class ressimrunner  {
                 }
                 foundWkspFile = true;
             }
-            byte[] bytes = pm.getFile(i, 0);
-            //write bytes locally.
+            
             File f = new File(modelOutputDestination, i.getName());
             try {
                 if (!f.getParentFile().exists()){
@@ -69,23 +92,18 @@ public class ressimrunner  {
                         return;
                     }
                 }
-            } catch (IOException e) {
+                mp.copyFileToLocal(i.getName(), "default", f.getAbsolutePath());
+            } catch (IOException | InvalidDataSourceException | DataStoreException e) {
                 e.printStackTrace();
                 return;
             }
-            try(FileOutputStream outputStream = new FileOutputStream(f)){
-                outputStream.write(bytes);
-            }catch(Exception e){
-                e.printStackTrace();
-                return;
-            }
+            
         }
         //perform all actions
         for (Action a : mp.getActions()){
-            pm.LogMessage(new Message(a.getDescription()));
-            pm.LogMessage(new Message(System.getProperty("user.dir")));
-             pm.LogMessage(new Message(System.getProperty("java.class.path")));
-            switch(a.getName()){
+            System.out.println(a.getDescription());
+            
+            switch(a.getType()){
                 case "update_timewindow_from_dss":
                     UpdateTimeWindowFromDssAction utwfda = new UpdateTimeWindowFromDssAction(a);
                     utwfda.computeAction();
@@ -114,12 +132,11 @@ public class ressimrunner  {
         
         for (DataSource output : mp.getOutputs()) { 
             Path path = Paths.get(modelOutputDestination + output.getName());
-            byte[] data;
             try {
-                data = Files.readAllBytes(path);
-                pm.putFile(data, output,0);
-            } catch (IOException e) {
-                e.printStackTrace();
+                mp.copyFileToRemote(output.getName(), "default", path.toString());
+            } catch (Exception e) {
+                System.out.println("could not post " + path.toString() + " to " + output.getName() + " at " + output.getPaths().get("default"));
+                System.exit(-1);
                 return;
             } 
         }

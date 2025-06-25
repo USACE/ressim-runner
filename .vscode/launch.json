@@ -6,12 +6,19 @@
     "configurations": [
         {
             "type": "java",
+            "name": "HmsControlFile",
+            "request": "launch",
+            "mainClass": "usace.cc.plugin.ressimrunner.HmsControlFile",
+            "projectName": "ressim-runner"
+        },
+        {
+            "type": "java",
             "name": "Launch ressimrunner",
             "request": "launch",
             "env": {
-                "PATH":"/HEC-ResSim-3.5.0.280/jar/*:/HEC-ResSim-3.5.0.280/jar/ext/*:/HEC-ResSim-3.5.0.280/jar/sys/*:$PATH",
-                "HEC_MAINCLASS":"hec.server.RssRMIServer",
-                "CLASSPATH":"/HEC-ResSim-3.5.0.280/jar/*:/HEC-ResSim-3.5.0.280/jar/ext/*:/HEC-ResSim-3.5.0.280/jar/sys/*:/HEC-ResSim-3.5.0.280/lib/*:/HEC-ResSim-3.5.0.280/lib/hec/*:/HEC-ResSim-3.5.0.280/java/lib/*:$CLASSPATH",
+                "PATH": "/HEC-ResSim-3.5.0.280/jar/*:/HEC-ResSim-3.5.0.280/jar/ext/*:/HEC-ResSim-3.5.0.280/jar/sys/*:$PATH",
+                "HEC_MAINCLASS": "hec.server.RssRMIServer",
+                "CLASSPATH": "/HEC-ResSim-3.5.0.280/jar/*:/HEC-ResSim-3.5.0.280/jar/ext/*:/HEC-ResSim-3.5.0.280/jar/sys/*:/HEC-ResSim-3.5.0.280/lib/*:/HEC-ResSim-3.5.0.280/lib/hec/*:/HEC-ResSim-3.5.0.280/java/lib/*:$CLASSPATH",
                 "CC_AWS_DEFAULT_REGION": "us-east-1",
                 "CC_AWS_ACCESS_KEY_ID": "AKIAIOSFODNN7EXAMPLE",
                 "CC_AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
@@ -30,9 +37,9 @@
                 "FFRD_S3_ENDPOINT": "host.docker.internal:9000",
                 "FFRD_S3_MOCK": true,
                 "FFRD_S3_DISABLE_SSL": true,
-                "FFRD_S3_FORCE_PATH_STYLE": true,
+                "FFRD_S3_FORCE_PATH_STYLE": true
             },
-            "mainClass": "usace.wat.plugin.ressimrunner.ressimrunner",
+            "mainClass": "usace.cc.plugin.ressimrunner.RessimRunner",
             "projectName": "ressim-runner",
             "vmArgs": [
                 "-Djava.library.path=/HEC-ResSim-3.5.0.280/lib",
@@ -52,8 +59,8 @@
                 "-DCWMS_EXE=/HEC-ResSim-3.5.0.280/",
                 "-DstatePlane.directory=\"$BASEDIR/config",
                 "-DNO_PREDEFINED_WKSP=true",
-                "-DHasGlobalVariables=false",
-            ],
+                "-DHasGlobalVariables=false"
+            ]
         }
     ]
 }

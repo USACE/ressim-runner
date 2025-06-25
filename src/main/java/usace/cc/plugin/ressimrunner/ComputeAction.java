@@ -1,8 +1,9 @@
-package usace.wat.plugin.ressimrunner;
+package usace.cc.plugin.ressimrunner;
 
 import java.io.File;
+import java.util.Optional;
 
-import usace.cc.plugin.Action;
+import usace.cc.plugin.api.Action;
 
 public class ComputeAction {
     private Action action;
@@ -15,13 +16,19 @@ public class ComputeAction {
         this.alternativeName = altname;
     }
     public void computeAction(){
-        String workspaceFilePath = action.getParameters().get("project_file").getPaths()[0];
-        printFileNames("/model");
+        Optional<String> opWorkspaceFilePath = action.getAttributes().get("project_file");
+        if(!opWorkspaceFilePath.isPresent()){
+            System.out.println("could not find compute-action attribute project_file");
+            System.exit(-1);
+        }
+        String workspaceFilePath = opWorkspaceFilePath.get();
+        //printFileNames("/model");
         System.out.println("opening workspace " + workspaceFilePath);
         String[] Args = new String[]{SCRIPT,workspaceFilePath,simulationName,alternativeName};
         hec.rss.server.RssRMIServer.main(Args);
         System.out.println("simulation completed for " + simulationName);
     }
+    /* 
     private void printFileNames(String path){
         File[] files = new File(path).listFiles();
         for (File f : files) {
@@ -32,4 +39,5 @@ public class ComputeAction {
             }
         }        
     }
+        */
 }

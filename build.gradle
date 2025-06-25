@@ -6,15 +6,15 @@ plugins {
 //Dependency Management
 repositories {
     mavenCentral()
-    maven{
-        name = "GitHubPackages"
-        // The url of the repository that contains the published artifacts
-        url = "https://maven.pkg.github.com/USACE/wat-java-sdk"
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-        }
-    }
+    //maven{
+    //    name = "GitHubPackages"
+    //    // The url of the repository that contains the published artifacts
+    //    url = "https://maven.pkg.github.com/USACE/wat-java-sdk"
+    //    credentials {
+    //       username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+    //        password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+    //    }
+    //}
 }
 configurations {
     linux_x64
@@ -26,9 +26,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.4'
     implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
     implementation 'com.amazonaws:aws-java-sdk-s3'
-    implementation fileTree(dir: "/HEC-ResSim-3.5.0.280/jar", include: '*.jar')
-    implementation fileTree(dir: "/HEC-ResSim-3.5.0.280/jar/ext", include: '*.jar')
-    implementation fileTree(dir: "/HEC-ResSim-3.5.0.280/jar/sys", include: '*.jar')
+    implementation fileTree(dir: "/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/jar", include: '*.jar')
+    implementation fileTree(dir: "/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/jar/ext", include: '*.jar')
+    implementation fileTree(dir: "/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/jar/sys", include: '*.jar')
     implementation fileTree(dir: "/cloud-compute/jar", include: '*.jar')
 }
 
@@ -36,10 +36,10 @@ jar {
     zip64 = true
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes "Main-Class": "usace.wat.plugin.ressimrunner.ressimrunner"
+        attributes "Main-Class": "usace.cc.plugin.ressimrunner.RessimRunner"
     }
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     
     from {
         configurations.runtimeClasspath.collect{it.isDirectory() ? it : zipTree(it)}
