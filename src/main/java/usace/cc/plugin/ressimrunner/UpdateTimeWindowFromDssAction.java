@@ -4,15 +4,18 @@ package usace.cc.plugin.ressimrunner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Optional;
 
 import hec.heclib.dss.DSSErrorMessage;
 import hec.heclib.dss.HecTimeSeries;
 import hec.heclib.util.HecTime;
 import hec.io.TimeSeriesContainer;
-import usace.cc.plugin.Action;
-import usace.cc.plugin.DataSource;
-import usace.cc.plugin.Payload;
-import usace.cc.plugin.PluginManager;
+import usace.cc.plugin.api.Action;
+import usace.cc.plugin.api.DataSource;
+import usace.cc.plugin.api.DataStore.DataStoreException;
+import usace.cc.plugin.api.IOManager.InvalidDataSourceException;
+import usace.cc.plugin.api.IOManager.InvalidDataStoreException;
 
 public class UpdateTimeWindowFromDssAction {
     private Action action;
@@ -26,24 +29,36 @@ public class UpdateTimeWindowFromDssAction {
         action = a;
     }
     public void computeAction(){
-        PluginManager pm = PluginManager.getInstance();
-        //get Payload
-        Payload payload = pm.getPayload();
         //find simperiod
-        DataSource simperiod = action.getParameters().get("simperiod");
+        Optional<DataSource> opSimperiod = action.getInputDataSource("simperiod");
+        if(!opSimperiod.isPresent()){
+            System.out.println("could not find input datasource named simperiod");
+            System.exit(-1);
+        }
+        DataSource simperiod = opSimperiod.get();
         //find input dss file
-        DataSource dssFile = action.getParameters().get("dssfile");
+        Optional<DataSource> opDssFile = action.getInputDataSource("dssfile");
+        if(!opDssFile.isPresent()){
+            System.out.println("could not find input datasource named dssfile");
+            System.exit(-1);
+        }
+        DataSource dssFile = opDssFile.get();
         //create dss reader
         //open up the dss file. reference: https://www.hec.usace.army.mil/confluence/display/dssJavaprogrammer/General+Example
         HecTimeSeries reader = new HecTimeSeries();
-        int readerstatus = reader.setDSSFileName(dssFile.getPaths()[0]);//assumes one path and assumes it is dss.
+        int readerstatus = reader.setDSSFileName(dssFile.getPaths().get("default"));//assumes one path and assumes it is dss.
         if (readerstatus <0){
             //panic?
             DSSErrorMessage error = reader.getLastError();
             error.printMessage();
             return;
         }
-        String p = dssFile.getDataPaths()[0];
+        Optional<Map<String,String>> opDssFileDataPaths = dssFile.getDataPaths();
+        if(!opDssFileDataPaths.isPresent()){
+            System.out.println("dssfile input datasource did not have any datapaths");
+            System.exit(-1);
+        }
+        String p = opDssFileDataPaths.get().get("default");
         TimeSeriesContainer tsc = new TimeSeriesContainer();
         tsc.fullName = p;
         readerstatus = reader.read(tsc,true);
@@ -55,18 +70,33 @@ public class UpdateTimeWindowFromDssAction {
         }
         String dssLookbackTime = tsc.getStartTime().dateAndTime();
         String dssEndTime = tsc.getEndTime().dateAndTime();
-        Integer lookbackDurationSteps = Integer.parseInt((String)payload.getAttributes().get(LOOKBACKDURATION));
-        String lookbackDurationUnit = (String)payload.getAttributes().get(LOOKBACKUNITS);
+        Optional<Integer> opLookbackDurationSteps = action.getAttributes().get(LOOKBACKDURATION);
+        if(!opLookbackDurationSteps.isPresent()){
+            System.out.println("update time window from dss action did not specify " + LOOKBACKDURATION);
+            System.exit(-1);
+        }
+        Integer lookbackDurationSteps = opLookbackDurationSteps.get();
+
+        Optional<String> opLookbackDurationUnit = action.getAttributes().get(LOOKBACKUNITS);
+        if(!opLookbackDurationUnit.isPresent()){
+            if(!opLookbackDurationSteps.isPresent()){
+                System.out.println("update time window from dss action did not specify " + LOOKBACKUNITS);
+                System.exit(-1);
+            }
+        }
+        String lookbackDurationUnit = opLookbackDurationUnit.get();
         String startTime = ComputeStartDateTime(lookbackDurationSteps, lookbackDurationUnit, tsc);
         byte[] sBytes;
         try {
-            sBytes = Files.readAllBytes(Paths.get(simperiod.getPaths()[0]));
+            sBytes = Files.readAllBytes(Paths.get(simperiod.getPaths().get("default")));
             sBytes = UpdateSimPeriodFile(dssLookbackTime,startTime,dssEndTime, sBytes);
-            Files.write(Paths.get(simperiod.getPaths()[0]),sBytes);
-            pm.putFile(sBytes, simperiod, 0);
-        } catch (IOException e) {
+            Files.write(Paths.get(simperiod.getPaths().get("default")),sBytes);
+            action.put(sBytes, simperiod.getName(),"default","");
+        } catch (IOException | InvalidDataSourceException | InvalidDataStoreException | DataStoreException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            //e.printStackTrace();
+            System.out.println("error updating simperiod and/or pushing it to remote");
+            System.exit(-1);
         }
 
 
