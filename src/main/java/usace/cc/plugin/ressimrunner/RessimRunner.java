@@ -3,7 +3,7 @@ package usace.cc.plugin.ressimrunner;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import usace.cc.plugin.api.PluginManager;
@@ -41,6 +41,7 @@ public class RessimRunner  {
             System.exit(-1);
         }
         String watershedName = opWatershedName.get();
+        //consider moving get alternative name and get simulation name to the action parameters for compute since that is the only action that uses these.
         //get Alternative name
         Optional<String> opAlternativeName = mp.getAttributes().get("alternative_name");
         if(!opAlternativeName.isPresent()){
@@ -55,44 +56,26 @@ public class RessimRunner  {
             System.exit(-1);
         }
         String simulationName = opSimulationName.get();
+        
         //copy the model to local if not local
         //hard coded workingdirectory is fine in a container
         String modelOutputDestination = "/model/"+watershedName+"/";
         File dest = new File(modelOutputDestination);
+        //clean house
         deleteDirectory(dest);
-        //download the payload to list all input files
-        String wkspFilePath = "";
-        Boolean foundWkspFile = false;
+        //dest.mkdir();
+        ///download the payload to list all input files
         for(DataSource i : mp.getInputs()){
-            if (i.getName().contains(".wksp")){
-                //compute passing in the event config portion of the model payload
-                
-                if (foundWkspFile){
-                    String tmpFile = modelOutputDestination + i.getName();
-                    if (wkspFilePath.length()<tmpFile.length()){
-                        //skip?
-                    }else{
-                        wkspFilePath = tmpFile;
-                    }
-                }else{
-                    wkspFilePath = modelOutputDestination + i.getName();
-                }
-                foundWkspFile = true;
-            }
-            
-            File f = new File(modelOutputDestination, i.getName());
+            File f = new File(i.getName());
             try {
-                if (!f.getParentFile().exists()){
-                    f.getParentFile().mkdirs();
+                //copy all paths in the datasource to the datasource name plus the path filename.
+                for(Entry<String,String> path : i.getPaths().entrySet()){
+                    File p = new File(path.getValue());
+                    String pName = p.getName();
+                    File df = new File(f.getAbsolutePath() + "/" + pName);
+                    mp.copyFileToLocal(i.getName(), path.getKey(), df.getAbsolutePath());
                 }
-                if (!f.createNewFile()){
-                    f.delete();
-                    if(!f.createNewFile()){
-                        System.out.println(f.getPath() + " cant create or delete this location");
-                        return;
-                    }
-                }
-                mp.copyFileToLocal(i.getName(), "default", f.getAbsolutePath());
+                
             } catch (IOException | InvalidDataSourceException | DataStoreException e) {
                 e.printStackTrace();
                 return;
@@ -131,11 +114,15 @@ public class RessimRunner  {
         }
         
         for (DataSource output : mp.getOutputs()) { 
-            Path path = Paths.get(modelOutputDestination + output.getName());
             try {
-                mp.copyFileToRemote(output.getName(), "default", path.toString());
+
+                for(Entry<String,String> op : output.getPaths().entrySet()){
+                    Path fullpath = Path.of(output.getName(), op.getKey());
+                    mp.copyFileToRemote(op.getValue(),op.getKey(), fullpath.toString());
+                }
+                
             } catch (Exception e) {
-                System.out.println("could not post " + path.toString() + " to " + output.getName() + " at " + output.getPaths().get("default"));
+                System.out.println("could not post output(s)");
                 System.exit(-1);
                 return;
             } 

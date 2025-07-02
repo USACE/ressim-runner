@@ -9,12 +9,12 @@ public class HmsControlFile {
     private final String ENDTIME = "     End Time: ";
     private HecTime StartDateTime;
     private HecTime EndDateTime;
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         String controlfilelines = "Control: SST\r\n     Last Modified Date: 12 June 2024\r\n     Last Modified Time: 15:35:54\r\n     Version: 4.12\r\n     Time Zone ID: America/Los_Angeles\r\n     Time Zone GMT Offset: -28800000\r\n     Start Date: 1 December 1990\r\n     Start Time: 01:00\r\n     End Date: 5 December 1990\r\n     End Time: 01:00\r\n     Time Interval: 60\r\nEnd:\r\n";
         byte[] cfbytes = controlfilelines.getBytes();
         HmsControlFile hcf = new HmsControlFile(cfbytes);
         System.out.println(hcf.EndDateTime.dateAndTime(104));
-    } */
+    }
     public HmsControlFile(byte[] bytes){
         String file = new String(bytes);
         String[] lines = file.split("\\r?\\n");
