@@ -107,6 +107,10 @@ public class RessimRunner  {
                     SimPeriodAction spa = new SimPeriodAction(a);
                     spa.computeAction();
                     break;
+                case "post_peaks":
+                    PostPeaksAction ppa = new PostPeaksAction(a);
+                    ppa.computeAction();
+                    break;
                 default:
                 break;
             }
