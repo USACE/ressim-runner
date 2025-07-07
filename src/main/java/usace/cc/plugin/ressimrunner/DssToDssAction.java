@@ -120,6 +120,7 @@ public class DssToDssAction {
             desttsc.fullName = destinationDataPaths.get(p.getKey());
             desttsc.setValues(outvalues);
             desttsc.setTimes(tsc.getTimes());
+            desttsc.setType(tsc.getType());
             tsc.setValues(outvalues);
             try {
                 writer.write(desttsc);

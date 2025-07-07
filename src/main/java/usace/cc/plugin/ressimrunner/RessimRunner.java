@@ -64,15 +64,15 @@ public class RessimRunner  {
         //clean house
         deleteDirectory(dest);
         //dest.mkdir();
-        ///download the payload to list all input files
+        ////download the payload to list all input files
         for(DataSource i : mp.getInputs()){
             File f = new File(i.getName());
             try {
                 //copy all paths in the datasource to the datasource name plus the path filename.
                 for(Entry<String,String> path : i.getPaths().entrySet()){
                     File p = new File(path.getValue());
-                    String pName = p.getName();
-                    File df = new File(f.getAbsolutePath() + "/" + pName);
+                    //String pName = p.getName();
+                    File df = new File(f.getAbsolutePath() + "/" + p.getName());
                     mp.copyFileToLocal(i.getName(), path.getKey(), df.getAbsolutePath());
                 }
                 
@@ -118,7 +118,7 @@ public class RessimRunner  {
 
                 for(Entry<String,String> op : output.getPaths().entrySet()){
                     Path fullpath = Path.of(output.getName(), op.getKey());
-                    mp.copyFileToRemote(op.getValue(),op.getKey(), fullpath.toString());
+                    mp.copyFileToRemote(output.getName(),op.getKey(), fullpath.toString());
                 }
                 
             } catch (Exception e) {
