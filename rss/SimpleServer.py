@@ -17,10 +17,6 @@
 #		then check the console log for the altName of each "run" computed for -All-.
 #		You should be able to identify your trial in the list of runs, IF it ran.
 
-wkspFile = r"E:\Testing\ResSim3.5\BaldEagle_V3.3\BaldEagle_V3.3\BaldEagle_V3.3.wksp"
-simulationName = "1993.11.27-1400"
-#alternativeName = "WithDSOps"
-alternativeName = "-All-"
 LogLevel = 3
 
 from hec.server import RmiAppImpl
@@ -59,14 +55,6 @@ def openSimulation(simulationName, rssWksp):
 		return simMgr
 	simMgr.loadWorkspace(None,wtrshdPath)
 	return simMgr
-
-def runExtract(simMgr):
-	success = simMgr.runExtract(SimulationExtractModel())
-	if success:
-		print("####SCRIPT### finished extracting")
-	else:
-		print("####SCRIPT### extract failed")
-	return 0
 
 def computeAll(simMgr):
 	runs = simMgr.getSimulationRuns()
@@ -125,10 +113,6 @@ else :
 	else:
 		alternativeName = "-All-"
 
-#wkspFile = r"E:\Testing\ResSim3.5\BaldEagle_V3.3\BaldEagle_V3.3\BaldEagle_V3.3.wksp"
-#simulationName = "1993.11.27-1400"
-#alternativeName = "WithDSOps"
-#alternativeName = "-All-"
 LogLevel = 3
 user = System.getProperty("user.name")
 
@@ -149,8 +133,6 @@ HecDSSFileAccess.setMessageLevel(1)
 
 sim = openSimulation(simulationName, wksp)
 if sim == None: sys.exit("####SCRIPT### - openSimulation failed")
-
-#runExtract(sim)
 
 if alternativeName == "-All-":
 	status = computeAll(sim)
