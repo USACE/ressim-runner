@@ -10,6 +10,34 @@
             "request": "launch",
             "mainClass": "usace.cc.plugin.ressimrunner.HmsControlFile",
             "projectName": "ressim-runner"
+        }, {
+            "type": "java",
+            "name": "Launch ressim remote",
+            "request": "launch",
+            "envFile": "/workspaces/.env-compute",
+            "mainClass": "usace.cc.plugin.ressimrunner.RessimRunner",
+            "projectName": "ressim-runner",
+            "vmArgs": [
+                "-Djava.library.path=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/lib",
+                "-Djava.security.policy=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config/java.policy",
+                "-Dlogfile.directory=/HEC/HEC-ResSim/3.5/logs/",
+                "-DLOGFILE=/HEC/HEC-ResSim/3.5/logs/HEC-ResSim.log",
+                "-DDSSLOGFILE=/HEC/HEC-ResSim/3.5/logs/HEC-ResSim_DSS.log",
+                "-DCACHE_DIR=/HEC/HEC-ResSim/3.5/cache/",
+                "-Dpython.path=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/jar/sys/jythonLib.jar/lib:/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/jar/sys/jythonutils.jar",
+                "-Dpython.home=/HEC/HEC-ResSim/3.5/pyhome",
+                "-DDataSetValidParameterListFile=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config/parameters_units.def",
+                "-DUNIT_FILE=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config/unitConversions.def",
+                "-DAsciiSerializer.formatFile=true",
+                "-Dlogin.properties.path=/HEC/HEC-ResSim/3.5/properties/login.properties",
+                "-Dproperties.path=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config",
+                "-DCWMS_HOME=/HEC/HEC-ResSim/3.5/",
+                "-DCWMS_EXE=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/",
+                "-DstatePlane.directory=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config",
+                "-DNO_PREDEFINED_WKSP=true",
+                "-DHasGlobalVariables=true",
+                "-DUseDefaultSecurityManager=true"
+            ]
         },
         {
             "type": "java",
@@ -42,24 +70,25 @@
             "mainClass": "usace.cc.plugin.ressimrunner.RessimRunner",
             "projectName": "ressim-runner",
             "vmArgs": [
-                "-Djava.library.path=/HEC-ResSim-3.5.0.280/lib",
-                "-Djava.security.policy=/HEC-ResSim-3.5.0.280/config/java.policy",
+                "-Djava.library.path=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/lib",
+                "-Djava.security.policy=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config/java.policy",
                 "-Dlogfile.directory=/HEC/HEC-ResSim/3.5/logs/",
                 "-DLOGFILE=/HEC/HEC-ResSim/3.5/logs/HEC-ResSim.log",
                 "-DDSSLOGFILE=/HEC/HEC-ResSim/3.5/logs/HEC-ResSim_DSS.log",
                 "-DCACHE_DIR=/HEC/HEC-ResSim/3.5/cache/",
-                "-Dpython.path=/HEC-ResSim-3.5.0.280/jar/sys/jythonLib.jar/lib:/HEC-ResSim-3.5.0.280/jar/sys/jythonutils.jar",
+                "-Dpython.path=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/jar/sys/jythonLib.jar/lib:/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/jar/sys/jythonutils.jar",
                 "-Dpython.home=/HEC/HEC-ResSim/3.5/pyhome",
-                "-DDataSetValidParameterListFile=/HEC-ResSim-3.5.0.280/config/parameters_units.def",
-                "-DUNIT_FILE=/HEC-ResSim-3.5.0.280/config/unitConversions.def",
+                "-DDataSetValidParameterListFile=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config/parameters_units.def",
+                "-DUNIT_FILE=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config/unitConversions.def",
                 "-DAsciiSerializer.formatFile=true",
                 "-Dlogin.properties.path=/HEC/HEC-ResSim/3.5/properties/login.properties",
-                "-Dproperties.path=/HEC-ResSim-3.5.0.280/config",
+                "-Dproperties.path=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config",
                 "-DCWMS_HOME=/HEC/HEC-ResSim/3.5/",
-                "-DCWMS_EXE=/HEC-ResSim-3.5.0.280/",
-                "-DstatePlane.directory=\"$BASEDIR/config",
+                "-DCWMS_EXE=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/",
+                "-DstatePlane.directory=/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/config",
                 "-DNO_PREDEFINED_WKSP=true",
-                "-DHasGlobalVariables=false"
+                "-DHasGlobalVariables=false",
+                "-DUseDefaultSecurityManager=true"
             ]
         }
     ]

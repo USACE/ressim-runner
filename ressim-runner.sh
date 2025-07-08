@@ -51,7 +51,8 @@ HEC_JVMPARAMS="$HEC_JVMPARAMS \
 -DstatePlane.directory=\"$BASEDIR/config\" \
 -Djava.library.path=\"$BASEDIR/lib\" \
 -DNO_PREDEFINED_WKSP=true \
--DHasGlobalVariables=false"
+-DHasGlobalVariables=false \
+-DUseDefaultSecurityManager=true"
 
 # For any arguments passed in
 for ARGUMENT in $@

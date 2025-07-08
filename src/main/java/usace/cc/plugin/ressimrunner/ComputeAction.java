@@ -1,6 +1,5 @@
 package usace.cc.plugin.ressimrunner;
 
-import java.io.File;
 import java.util.Optional;
 
 import usace.cc.plugin.api.Action;
@@ -9,7 +8,7 @@ public class ComputeAction {
     private Action action;
     private String simulationName;
     private String alternativeName;
-    private final String SCRIPT = "/HEC-ResSim-3.5.0.280/SimpleServer.py";
+    private final String SCRIPT = "/HEC-ResSim-3.5.1.18-linuxbeta-linux-x86_64/SimpleServer.py";
     public ComputeAction(Action a, String simname, String altname) {
         this.action = a;
         this.simulationName = simname;

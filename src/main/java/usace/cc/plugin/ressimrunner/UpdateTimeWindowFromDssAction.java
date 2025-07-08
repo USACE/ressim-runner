@@ -91,7 +91,7 @@ public class UpdateTimeWindowFromDssAction {
             sBytes = Files.readAllBytes(Paths.get(simperiod.getPaths().get("default")));
             sBytes = UpdateSimPeriodFile(dssLookbackTime,startTime,dssEndTime, sBytes);
             Files.write(Paths.get(simperiod.getPaths().get("default")),sBytes);
-            action.put(sBytes, simperiod.getName(),"default","");
+            action.put(sBytes, simperiod.getName(),"default","");//put uses output source... must be in payload as an input and an output, output needs to have a remote path in default.
         } catch (IOException | InvalidDataSourceException | InvalidDataStoreException | DataStoreException e) {
             // TODO Auto-generated catch block
             //e.printStackTrace();
