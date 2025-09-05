@@ -1,2 +1,2 @@
 # ressim-runner
-a lightweight hms runner in linux for wat-api
+a Cloud-Compute plugin for HEC-ResSim on Linux based on the cc-java-sdk
