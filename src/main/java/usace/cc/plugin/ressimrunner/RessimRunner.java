@@ -111,6 +111,10 @@ public class RessimRunner  {
                     PostPeaksAction ppa = new PostPeaksAction(a);
                     ppa.computeAction();
                     break;
+                case "peaks_merger":
+                    PeaksMergerAction pma = new PeaksMergerAction(a);
+                    pma.computeAction();
+                    break;
                 default:
                 break;
             }
